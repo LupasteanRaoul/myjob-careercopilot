@@ -13,7 +13,7 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 import pdfplumber
 from bs4 import BeautifulSoup
-from emergentintegrations.llm.chat import LlmChat, UserMessage
+from openai import OpenAI
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -37,17 +37,31 @@ logger = logging.getLogger(__name__)
 # ─── AI Helper ────────────────────────────────────────────────────────────────
 async def call_ai(prompt: str, system_instruction: str = "", session_id: str = None) -> str:
     try:
-        chat = LlmChat(
-            api_key=AI_API_KEY,
-            session_id=session_id or str(uuid.uuid4()),
-            system_message=system_instruction or "You are a helpful assistant."
-        ).with_model("openai", "gpt-4o-mini")
-        response = await chat.send_message(UserMessage(text=prompt))
-        return response
+        client = OpenAI(api_key=AI_API_KEY)
+        
+        messages = []
+        
+        # Adaugă system instruction dacă există
+        if system_instruction:
+            messages.append({"role": "system", "content": system_instruction})
+        else:
+            messages.append({"role": "system", "content": "You are a helpful assistant."})
+        
+        # Adaugă mesajul utilizatorului
+        messages.append({"role": "user", "content": prompt})
+        
+        # Call OpenAI API
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=messages,
+            temperature=0.7,
+            max_tokens=1024
+        )
+        
+        return response.choices[0].message.content
     except Exception as e:
         logger.error(f"AI Error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
-
 # ─── Models ───────────────────────────────────────────────────────────────────
 class UserRegister(BaseModel):
     email: str; password: str; name: str
