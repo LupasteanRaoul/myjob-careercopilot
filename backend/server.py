@@ -13,7 +13,7 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 import pdfplumber
 from bs4 import BeautifulSoup
-from openai import OpenAI
+import google.generativeai as genai
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -41,28 +41,19 @@ async def root():
 # ─── AI Helper ────────────────────────────────────────────────────────────────
 async def call_ai(prompt: str, system_instruction: str = "", session_id: str = None) -> str:
     try:
-        client = OpenAI(api_key=AI_API_KEY)
+        import google.generativeai as genai
         
-        messages = []
+        genai.configure(api_key=AI_API_KEY)
+        model = genai.GenerativeModel('gemini-1.5-flash')
         
-        # Adaugă system instruction dacă există
+        # Construiește prompt-ul cu system instruction
+        full_prompt = ""
         if system_instruction:
-            messages.append({"role": "system", "content": system_instruction})
-        else:
-            messages.append({"role": "system", "content": "You are a helpful assistant."})
+            full_prompt += f"{system_instruction}\n\n"
+        full_prompt += prompt
         
-        # Adaugă mesajul utilizatorului
-        messages.append({"role": "user", "content": prompt})
-        
-        # Call OpenAI API
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=messages,
-            temperature=0.7,
-            max_tokens=1024
-        )
-        
-        return response.choices[0].message.content
+        response = model.generate_content(full_prompt)
+        return response.text
     except Exception as e:
         logger.error(f"AI Error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
