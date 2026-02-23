@@ -43,7 +43,7 @@ async def call_ai(prompt: str, system_instruction: str = "", session_id: str = N
         import google.generativeai as genai
         
         genai.configure(api_key=AI_API_KEY)
-        model = genai.GenerativeModel('gemini-1.5-flash-latest')
+        model = genai.GenerativeModel('gemini-1.5-flash')
         
         full_prompt = ""
         if system_instruction:
