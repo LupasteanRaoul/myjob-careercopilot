@@ -41,7 +41,7 @@ async def root():
 # ─── AI Helper ────────────────────────────────────────────────────────────────
 async def call_ai(prompt: str, system_instruction: str = "", session_id: str = None) -> str:
     try:
-        client = Groq(api_key=AI_API_KEY)
+        client = Groq(api_key=AI_API_KEY)  # ✅ Fără proxies!
         
         messages = []
         
