@@ -34,6 +34,10 @@ api_router = APIRouter(prefix="/api")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+@app.get("/")
+async def root():
+    return {"message": "MyJob API v1.0", "status": "running"}
+
 # ─── AI Helper ────────────────────────────────────────────────────────────────
 async def call_ai(prompt: str, system_instruction: str = "", session_id: str = None) -> str:
     try:
