@@ -13,7 +13,7 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 import pdfplumber
 from bs4 import BeautifulSoup
-from google import genai
+from groq import Groq
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -37,21 +37,29 @@ logger = logging.getLogger(__name__)
 @app.get("/")
 async def root():
     return {"message": "MyJob API v1.0", "status": "running"}
+
 # ─── AI Helper ────────────────────────────────────────────────────────────────
 async def call_ai(prompt: str, system_instruction: str = "", session_id: str = None) -> str:
     try:
-        client = genai.Client(api_key=AI_API_KEY)
+        client = Groq(api_key=AI_API_KEY)
         
-        full_prompt = ""
+        messages = []
+        
         if system_instruction:
-            full_prompt += f"{system_instruction}\n\n"
-        full_prompt += prompt
+            messages.append({"role": "system", "content": system_instruction})
+        else:
+            messages.append({"role": "system", "content": "You are a helpful assistant."})
         
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=full_prompt
+        messages.append({"role": "user", "content": prompt})
+        
+        response = client.chat.completions.create(
+            model="llama-3.1-70b-versatile",
+            messages=messages,
+            temperature=0.7,
+            max_tokens=1024
         )
-        return response.text
+        
+        return response.choices[0].message.content
     except Exception as e:
         logger.error(f"AI Error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
