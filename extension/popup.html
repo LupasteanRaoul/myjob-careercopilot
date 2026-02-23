@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MyJob</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, 'Plus Jakarta Sans', BlinkMacSystemFont, sans-serif;
+      background: #F5F5F7;
+      width: 340px;
+      min-height: 400px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .header {
+      background: #000;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo { display: flex; align-items: center; gap: 8px; }
+    .logo-icon {
+      width: 26px; height: 26px; background: #0071E3;
+      border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    }
+    .logo-icon svg { width: 13px; height: 13px; }
+    .logo-text { color: #fff; font-size: 14px; font-weight: 700; letter-spacing: -0.3px; }
+    .logo-text span { color: #0071E3; }
+    .settings-btn {
+      background: none; border: none; cursor: pointer;
+      color: #86868B; padding: 4px;
+      border-radius: 6px; transition: color 0.15s;
+    }
+    .settings-btn:hover { color: #fff; }
+
+    /* Tabs */
+    .tabs {
+      display: flex; background: #fff;
+      border-bottom: 1px solid #E5E5EA;
+    }
+    .tab {
+      flex: 1; padding: 10px; text-align: center;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      color: #6E6E73; border-bottom: 2px solid transparent;
+      transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none;
+    }
+    .tab.active { color: #0071E3; border-bottom-color: #0071E3; }
+
+    /* Content */
+    .content { padding: 14px 14px 16px; }
+
+    /* Job card */
+    .job-card {
+      background: #fff; border-radius: 12px;
+      border: 1px solid #E5E5EA;
+      padding: 14px; margin-bottom: 12px;
+    }
+    .job-card-url {
+      font-size: 10px; color: #8E8E93;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 10px;
+    }
+    .field-row { margin-bottom: 10px; }
+    .field-label {
+      font-size: 10px; font-weight: 700; color: #6E6E73;
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px;
+    }
+    .field-value {
+      font-size: 13px; font-weight: 600; color: #1D1D1F;
+    }
+    .field-value.muted { color: #6E6E73; font-weight: 400; }
+    .field-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+    /* Status badge */
+    .status-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .status-select {
+      flex: 1; padding: 6px 8px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      border: 1px solid #E5E5EA; background: #F5F5F7; cursor: pointer; outline: none;
+      color: #1D1D1F;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%; padding: 11px; border-radius: 980px;
+      background: #0071E3; color: #fff; border: none;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .btn-secondary {
+      width: 100%; padding: 10px; border-radius: 980px;
+      background: transparent; color: #0071E3; border: 1px solid #D2D2D7;
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s;
+    }
+    .btn-secondary:hover { background: #F0F4FA; }
+
+    /* Scrape section */
+    .scrape-section { margin-bottom: 12px; }
+    .page-url-row {
+      background: #fff; border: 1px solid #E5E5EA; border-radius: 10px;
+      padding: 10px 12px; margin-bottom: 10px;
+    }
+    .page-url-label { font-size: 10px; font-weight: 700; color: #6E6E73; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+    .page-url-text { font-size: 11px; color: #1D1D1F; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Loading */
+    .loading {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 32px 16px; gap: 12px;
+    }
+    .spinner {
+      width: 28px; height: 28px; border: 2.5px solid #E5E5EA;
+      border-top-color: #0071E3; border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-size: 13px; color: #6E6E73; font-weight: 500; text-align: center; }
+
+    /* Success */
+    .success-state {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 28px 16px; gap: 10px; text-align: center;
+    }
+    .success-icon {
+      width: 48px; height: 48px; background: #EDF8F1;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .success-title { font-size: 15px; font-weight: 700; color: #1D1D1F; }
+    .success-sub { font-size: 12px; color: #6E6E73; }
+
+    /* Error */
+    .error-banner {
+      background: #FFEDEC; border: 1px solid #FFB3AE; border-radius: 10px;
+      padding: 10px 12px; margin-bottom: 10px;
+      font-size: 12px; color: #C0392B; font-weight: 500;
+    }
+
+    /* Settings panel */
+    .settings-panel { display: none; }
+    .settings-panel.active { display: block; }
+    .main-panel { }
+    .main-panel.hidden { display: none; }
+
+    .input-group { margin-bottom: 10px; }
+    .input-label { font-size: 11px; font-weight: 700; color: #6E6E73; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .input-field {
+      width: 100%; padding: 9px 10px; border: 1px solid #D2D2D7; border-radius: 10px;
+      font-size: 12px; color: #1D1D1F; background: #fff; outline: none;
+      transition: border-color 0.15s;
+    }
+    .input-field:focus { border-color: #0071E3; }
+    .input-hint { font-size: 10px; color: #8E8E93; margin-top: 3px; }
+    .divider { height: 1px; background: #E5E5EA; margin: 10px 0; }
+    .not-configured {
+      padding: 24px 16px; text-align: center;
+    }
+    .not-configured-icon { font-size: 36px; margin-bottom: 10px; }
+    .not-configured-title { font-size: 14px; font-weight: 700; color: #1D1D1F; margin-bottom: 6px; }
+    .not-configured-text { font-size: 12px; color: #6E6E73; line-height: 1.5; margin-bottom: 14px; }
+    .help-text { font-size: 11px; color: #8E8E93; text-align: center; margin-top: 8px; }
+    .token-info { 
+      background: #EFF4FB; border: 1px solid #B8D4F5; border-radius: 10px;
+      padding: 10px 12px; margin-bottom: 12px; font-size: 11px; color: #0071E3; line-height: 1.5;
+    }
+    .copy-token-btn {
+      background: #F5F5F7; border: 1px solid #D2D2D7; border-radius: 8px;
+      padding: 9px 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: #1D1D1F; transition: all 0.15s; outline: none;
+    }
+    .copy-token-btn:hover { background: #E8E8ED; border-color: #A1A1A6; }
+    .copy-token-btn:active { transform: scale(0.95); }
+    .copy-token-btn.copied {
+      background: #EDF8F1; border-color: #34C759; color: #34C759;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path>
+        </svg>
+      </div>
+      <span class="logo-text">My<span>Job</span></span>
+    </div>
+    <button class="settings-btn" id="settingsToggle" title="Settings">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Main Panel -->
+  <div class="main-panel" id="mainPanel">
+
+    <!-- Not configured state -->
+    <div class="not-configured" id="notConfigured" style="display:none">
+      <div class="not-configured-icon">⚙️</div>
+      <div class="not-configured-title">Setup Required</div>
+      <div class="not-configured-text">
+        Configure your MyJob backend URL and auth token to start saving jobs with one click.
+      </div>
+      <button class="btn-primary" id="goToSettings">Open Settings</button>
+    </div>
+
+    <!-- Configured state -->
+    <div id="configuredPanel">
+      <div class="tabs">
+        <button class="tab active" id="tabSave" data-tab="save">Save Job</button>
+        <button class="tab" id="tabHistory" data-tab="history">Recent</button>
+      </div>
+
+      <div class="content" id="tabContentSave">
+
+        <!-- Loading state -->
+        <div class="loading" id="loadingState" style="display:none">
+          <div class="spinner"></div>
+          <div class="loading-text" id="loadingText">Analyzing job posting with AI...</div>
+        </div>
+
+        <!-- Success state -->
+        <div class="success-state" id="successState" style="display:none">
+          <div class="success-icon">✅</div>
+          <div class="success-title">Saved to MyJob!</div>
+          <div class="success-sub" id="successDetail">Added to your applications</div>
+          <button class="btn-secondary" id="saveAnother" style="margin-top:6px">Save Another</button>
+        </div>
+
+        <!-- Error banner -->
+        <div class="error-banner" id="errorBanner" style="display:none"></div>
+
+        <!-- Form state -->
+        <div id="formState">
+          <div class="page-url-row">
+            <div class="page-url-label">Current Page</div>
+            <div class="page-url-text" id="currentUrl">Loading...</div>
+          </div>
+
+          <div class="job-card" id="extractedCard" style="display:none">
+            <div class="job-card-url" id="cardUrl"></div>
+            <div class="field-row">
+              <div class="field-label">Company</div>
+              <div class="field-value" id="fieldCompany">—</div>
+            </div>
+            <div class="field-row">
+              <div class="field-label">Role</div>
+              <div class="field-value" id="fieldRole">—</div>
+            </div>
+            <div class="field-row-2">
+              <div>
+                <div class="field-label">Location</div>
+                <div class="field-value muted" id="fieldLocation">—</div>
+              </div>
+              <div>
+                <div class="field-label">Salary</div>
+                <div class="field-value muted" id="fieldSalary">—</div>
+              </div>
+            </div>
+            <div class="status-row">
+              <div class="field-label" style="margin-bottom:0">Status</div>
+              <select class="status-select" id="statusSelect">
+                <option value="Applied">Applied</option>
+                <option value="Interview">Interview</option>
+                <option value="Offer">Offer</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="actionButtons">
+            <button class="btn-primary" id="extractBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Import This Job
+            </button>
+            <button class="btn-primary" id="saveBtn" style="display:none; background:#34C759">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Save to MyJob
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="content" id="tabContentHistory" style="display:none">
+        <div id="historyList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Panel -->
+  <div class="settings-panel" id="settingsPanel">
+    <div class="content" style="padding-top:16px">
+      <div class="token-info">
+        💡 Open MyJob app → click <strong>"Copy Token"</strong> button in the sidebar, then paste it below.
+      </div>
+      <div class="input-group">
+        <div class="input-label">Backend URL</div>
+        <input type="text" class="input-field" id="backendUrl" placeholder="https://your-app.railway.app" />
+        <div class="input-hint">Your Railway or localhost URL (no trailing slash)</div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">Auth Token</div>
+        <div style="display: flex; gap: 6px;">
+          <input type="password" class="input-field" id="authToken" placeholder="eyJhbGciOiJ..." style="flex: 1;" />
+          <button class="copy-token-btn" id="copyTokenBtn" title="Copy token">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="input-hint">JWT token from MyJob settings</div>
+      </div>
+      <button class="btn-primary" id="saveSettings">Save Settings</button>
+      <div class="help-text" style="margin-top:10px">Settings are saved locally in your browser</div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
