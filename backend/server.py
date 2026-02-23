@@ -13,7 +13,7 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 import pdfplumber
 from bs4 import BeautifulSoup
-import google.generativeai as genai
+from google import genai
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -40,17 +40,17 @@ async def root():
 # ─── AI Helper ────────────────────────────────────────────────────────────────
 async def call_ai(prompt: str, system_instruction: str = "", session_id: str = None) -> str:
     try:
-        import google.generativeai as genai
-        
-        genai.configure(api_key=AI_API_KEY)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        client = genai.Client(api_key=AI_API_KEY)
         
         full_prompt = ""
         if system_instruction:
             full_prompt += f"{system_instruction}\n\n"
         full_prompt += prompt
         
-        response = model.generate_content(full_prompt)
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=full_prompt
+        )
         return response.text
     except Exception as e:
         logger.error(f"AI Error: {str(e)}")
