@@ -37,14 +37,14 @@ logger = logging.getLogger(__name__)
 @app.get("/")
 async def root():
     return {"message": "MyJob API v1.0", "status": "running"}
-
 # ─── AI Helper ────────────────────────────────────────────────────────────────
 async def call_ai(prompt: str, system_instruction: str = "", session_id: str = None) -> str:
     try:
         import google.generativeai as genai
         
         genai.configure(api_key=AI_API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash-latest')          
+        model = genai.GenerativeModel('gemini-1.5-flash-latest')
+        
         full_prompt = ""
         if system_instruction:
             full_prompt += f"{system_instruction}\n\n"
