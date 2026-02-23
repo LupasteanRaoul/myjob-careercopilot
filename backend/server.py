@@ -53,7 +53,7 @@ async def call_ai(prompt: str, system_instruction: str = "", session_id: str = N
         messages.append({"role": "user", "content": prompt})
         
         response = client.chat.completions.create(
-            model="llama-3.1-70b-versatile",
+            model="llama-3.3-70b-versatile"
             messages=messages,
             temperature=0.7,
             max_tokens=1024
