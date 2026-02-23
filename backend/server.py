@@ -42,62 +42,10 @@ async def root():
 async def call_ai(prompt: str, system_instruction: str = "", session_id: str = None) -> str:
     try:
         import google.generativeai as genai
-       
-/app/server.py:16: FutureWarning: 
-All support for the `google.generativeai` package has ended. It will no longer be receiving 
-updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
-See README for more details:
-https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
-  import google.generativeai as genai
-INFO:     Started server process [1]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
-Stopping Container
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [1]
-INFO:     100.64.0.2:32674 - "OPTIONS /api/auth/login HTTP/1.1" 200 OK
-WARNING:passlib.handlers.bcrypt:(trapped) error reading bcrypt version
-Traceback (most recent call last):
-  File "/app/.venv/lib/python3.13/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
-    version = _bcrypt.__about__.__version__
-              ^^^^^^^^^^^^^^^^^
-AttributeError: module 'bcrypt' has no attribute '__about__'
-INFO:     100.64.0.3:23408 - "POST /api/auth/login HTTP/1.1" 401 Unauthorized
-INFO:     100.64.0.4:49700 - "POST /api/auth/login HTTP/1.1" 401 Unauthorized
-INFO:     100.64.0.5:18530 - "POST /api/auth/login HTTP/1.1" 401 Unauthorized
-INFO:     100.64.0.5:25162 - "OPTIONS /api/auth/login HTTP/1.1" 200 OK
-INFO:     100.64.0.6:48904 - "POST /api/auth/login HTTP/1.1" 401 Unauthorized
-INFO:     100.64.0.4:49602 - "OPTIONS /api/auth/register HTTP/1.1" 200 OK
-INFO:     100.64.0.4:49602 - "POST /api/auth/register HTTP/1.1" 400 Bad Request
-INFO:     100.64.0.4:61708 - "POST /api/auth/register HTTP/1.1" 400 Bad Request
-INFO:     100.64.0.4:61708 - "POST /api/auth/register HTTP/1.1" 400 Bad Request
-INFO:     100.64.0.5:41106 - "POST /api/auth/register HTTP/1.1" 400 Bad Request
-INFO:     100.64.0.7:32538 - "POST /api/auth/register HTTP/1.1" 400 Bad Request
-INFO:     100.64.0.3:42044 - "POST /api/auth/register HTTP/1.1" 400 Bad Request
-INFO:     100.64.0.3:42044 - "POST /api/auth/login HTTP/1.1" 200 OK
-INFO:     100.64.0.3:42044 - "OPTIONS /api/applications HTTP/1.1" 200 OK
-INFO:     100.64.0.5:37592 - "OPTIONS /api/analytics HTTP/1.1" 200 OK
-INFO:     100.64.0.3:42044 - "GET /api/applications HTTP/1.1" 200 OK
-INFO:     100.64.0.8:61020 - "GET /api/analytics HTTP/1.1" 200 OK
-INFO:     100.64.0.3:59198 - "OPTIONS /api/chat HTTP/1.1" 200 OK
-ERROR:server:AI Error: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
-INFO:     100.64.0.3:59198 - "POST /api/chat HTTP/1.1" 500 Internal Server Error
-INFO:     100.64.0.6:16266 - "OPTIONS /api/auth/me HTTP/1.1" 200 OK
-INFO:     100.64.0.6:16266 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     100.64.0.6:16266 - "OPTIONS /api/analytics HTTP/1.1" 200 OK
-INFO:     100.64.0.9:62258 - "OPTIONS /api/applications HTTP/1.1" 200 OK
-INFO:     100.64.0.6:16266 - "GET /api/analytics HTTP/1.1" 200 OK
-INFO:     100.64.0.3:28020 - "GET /api/applications HTTP/1.1" 200 OK
-INFO:     100.64.0.6:16276 - "GET /api/applications HTTP/1.1" 200 OK
-ERROR:server:AI Error: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
-INFO:     100.64.0.10:57418 - "POST /api/chat HTTP/1.1" 500 Internal Server Error 
+        
         genai.configure(api_key=AI_API_KEY)
         model = genai.GenerativeModel('gemini-pro')
         
-        # Construiește prompt-ul cu system instruction
         full_prompt = ""
         if system_instruction:
             full_prompt += f"{system_instruction}\n\n"
