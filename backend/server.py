@@ -53,7 +53,7 @@ async def root():
 # =====================================================================
 async def call_ai(prompt: str, system_instruction: str = "", session_id: str = None) -> str:
     try:
-        groq_client = Groq(api_key=AI_API_KEY)
+        groq_client = Groq(api_key=GROQ_API_KEY)
         messages = []
         if system_instruction:
             messages.append({"role": "system", "content": system_instruction})
