@@ -27,7 +27,7 @@ db = mongo_client[os.environ['DB_NAME']]
 
 JWT_SECRET = os.environ['JWT_SECRET']
 JWT_ALGORITHM = "HS256"
-AI_API_KEY = os.environ['AI_API_KEY']
+GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
