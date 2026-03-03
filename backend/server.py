@@ -973,7 +973,7 @@ async def get_badges():
 # APP SETUP
 # =====================================================================
 app.include_router(api_router)
-# CORS Configuration - Read from environment variable
+# ✅ CORS Configuration - Read from environment variable
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
 
 app.add_middleware(
