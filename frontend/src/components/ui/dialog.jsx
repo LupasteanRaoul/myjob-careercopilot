@@ -5,11 +5,8 @@ import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const Dialog = DialogPrimitive.Root
-
 const DialogTrigger = DialogPrimitive.Trigger
-
 const DialogPortal = DialogPrimitive.Portal
-
 const DialogClose = DialogPrimitive.Close
 
 const DialogOverlay = React.forwardRef(({ className, ...props }, ref) => (
@@ -45,12 +42,31 @@ const DialogContent = React.forwardRef(({ className, children, ...props }, ref) 
       {...props}
     >
       {children}
-      {/* Close Button - Fix pentru X icon */}
+      {/* Close Button - FIX FINAL */}
       <DialogPrimitive.Close
-        className="absolute right-4 top-4 rounded-md p-1.5 opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+        className="absolute right-4 top-4 rounded-md p-1.5 hover:bg-muted transition-opacity focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         aria-label="Close"
+        style={{ 
+          opacity: 0.7,
+          zIndex: 100,
+          backgroundColor: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+        onMouseEnter={(e) => e.target.style.opacity = 1}
+        onMouseLeave={(e) => e.target.style.opacity = 0.7}
       >
-        <X className="h-4 w-4" strokeWidth={2} />
+        <X 
+          className="h-4 w-4" 
+          strokeWidth={2.5}
+          style={{ 
+            color: 'rgb(var(--foreground))',
+            display: 'block'
+          }} 
+        />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
@@ -58,25 +74,13 @@ const DialogContent = React.forwardRef(({ className, children, ...props }, ref) 
 ))
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
-const DialogHeader = ({
-  className,
-  ...props
-}) => (
-  <div
-    className={cn("flex flex-col space-y-1.5 text-center sm:text-left", className)}
-    {...props}
-  />
+const DialogHeader = ({ className, ...props }) => (
+  <div className={cn("flex flex-col space-y-1.5 text-center sm:text-left", className)} {...props} />
 )
 DialogHeader.displayName = "DialogHeader"
 
-const DialogFooter = ({
-  className,
-  ...props
-}) => (
-  <div
-    className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className)}
-    {...props}
-  />
+const DialogFooter = ({ className, ...props }) => (
+  <div className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className)} {...props} />
 )
 DialogFooter.displayName = "DialogFooter"
 
