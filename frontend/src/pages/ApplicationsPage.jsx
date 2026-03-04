@@ -240,73 +240,81 @@ export default function ApplicationsPage() {
         </div>
       )}
 
-      {/* Add/Edit Modal */}
-      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="max-w-lg" style={{ background: "rgb(var(--card))", border: "1px solid rgb(var(--border))" }} data-testid="app-modal">
-          <DialogHeader>
-            <DialogTitle className="font-['Plus_Jakarta_Sans'] text-lg font-bold text-foreground flex items-center gap-2">
-              {parsing && <Loader2 size={15} className="animate-spin" style={{ color: "rgb(var(--primary))" }} />}
-              {parsing ? "Parsing PDF..." : editApp ? "Edit Application" : "New Application"}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="grid grid-cols-2 gap-3 py-1">
-            {[["form-company","company","Company *","Google",2],["form-role","role","Role *","Frontend Engineer",2]].map(([tid,field,label,placeholder,span])=>(
-              <div key={field} className={`col-span-${span} space-y-1.5`}>
-                <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">{label}</Label>
-                <input data-testid={tid} value={form[field]} onChange={e=>setForm(f=>({...f,[field]:e.target.value}))} placeholder={placeholder} className={inputCls} style={inputStyle} />
-              </div>
-            ))}
-            <div className="space-y-1.5">
-              <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">Status</Label>
-              <Select value={form.status} onValueChange={v=>setForm(f=>({...f,status:v}))}>
-                <SelectTrigger data-testid="form-status" style={{ background: "rgb(var(--input))", borderColor: "rgb(var(--border))", color: "rgb(var(--foreground))" }}><SelectValue /></SelectTrigger>
-                <SelectContent style={{ background: "rgb(var(--popover))", borderColor: "rgb(var(--border))" }}>
-                  {STATUSES.map(s=><SelectItem key={s} value={s} className="text-foreground font-['Plus_Jakarta_Sans']">{s}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">Location</Label>
-              <input data-testid="form-location" value={form.location} onChange={e=>setForm(f=>({...f,location:e.target.value}))} placeholder="Remote / NYC" className={inputCls} style={inputStyle} />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">Salary</Label>
-              <input data-testid="form-salary" value={form.salary_range} onChange={e=>setForm(f=>({...f,salary_range:e.target.value}))} placeholder="$80k–$120k" className={inputCls} style={inputStyle} />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">Applied Date</Label>
-              <input data-testid="form-date" type="date" value={form.applied_date} onChange={e=>setForm(f=>({...f,applied_date:e.target.value}))} className={inputCls} style={inputStyle} />
-            </div>
-            <div className="col-span-2 space-y-1.5">
-              <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">Job URL</Label>
-              <input data-testid="form-url" value={form.url} onChange={e=>setForm(f=>({...f,url:e.target.value}))} placeholder="https://..." className={inputCls} style={inputStyle} />
-            </div>
-            {form.tech_stack?.length>0 && (
-              <div className="col-span-2 space-y-1.5">
-                <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">Tech Stack</Label>
-                <div className="flex flex-wrap gap-1.5">
-                  {form.tech_stack.map((t,i)=>(
-                    <span key={i} className="text-xs px-2.5 py-1 rounded-full font-['Plus_Jakarta_Sans'] font-medium" style={{ background: "#EFF4FB", color: "#0071E3" }}>{t}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-            <div className="col-span-2 space-y-1.5">
-              <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">Notes</Label>
-              <textarea data-testid="form-notes" value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} placeholder="Additional notes..." rows={3}
-                className="apple-input w-full px-3 py-2 text-sm resize-none" style={inputStyle} />
-            </div>
-          </div>
-          <DialogFooter className="gap-2">
-            <button onClick={()=>setModalOpen(false)} className="apple-btn-secondary px-4 py-2 text-sm" style={{ color: "rgb(var(--muted-foreground))", borderColor: "rgb(var(--border))" }}>Cancel</button>
-            <button onClick={handleSave} disabled={saving||parsing} data-testid="save-application-btn"
-              className="apple-btn-primary px-4 py-2 text-sm disabled:opacity-50">
-              {saving ? "Saving..." : editApp ? "Update" : "Add Application"}
-            </button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+     {/* Add/Edit Modal - FIX OVERFLOW */}
+<Dialog open={modalOpen} onOpenChange={setModalOpen}>
+  <DialogContent 
+    className="max-w-lg max-h-[90vh] overflow-y-auto flex flex-col" 
+    style={{ background: "rgb(var(--card))", border: "1px solid rgb(var(--border))" }} 
+    data-testid="app-modal"
+  >
+    {/* Header - Sticky */}
+    <DialogHeader className="sticky top-0 bg-[rgb(var(--card))] z-10 pb-3 border-b border-border">
+      <DialogTitle className="font-['Plus_Jakarta_Sans'] text-lg font-bold text-foreground flex items-center gap-2">
+        {parsing && <Loader2 size={15} className="animate-spin" style={{ color: "rgb(var(--primary))" }} />}
+        {parsing ? "Parsing PDF..." : editApp ? "Edit Application" : "New Application"}
+      </DialogTitle>
+    </DialogHeader>
 
+    {/* Form Content - Scrollable */}
+    <div className="grid grid-cols-2 gap-3 py-4 flex-1 overflow-y-auto">
+      {[["form-company","company","Company *","Google",2],["form-role","role","Role *","Frontend Engineer",2]].map(([tid,field,label,placeholder,span])=>(
+        <div key={field} className={`col-span-${span} space-y-1.5`}>
+          <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">{label}</Label>
+          <input data-testid={tid} value={form[field]} onChange={e=>setForm(f=>({...f,[field]:e.target.value}))} placeholder={placeholder} className={inputCls} style={inputStyle} />
+        </div>
+      ))}
+      <div className="space-y-1.5">
+        <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">Status</Label>
+        <Select value={form.status} onValueChange={v=>setForm(f=>({...f,status:v}))}>
+          <SelectTrigger data-testid="form-status" style={{ background: "rgb(var(--input))", borderColor: "rgb(var(--border))", color: "rgb(var(--foreground))" }}><SelectValue /></SelectTrigger>
+          <SelectContent style={{ background: "rgb(var(--popover))", borderColor: "rgb(var(--border))" }}>
+            {STATUSES.map(s=><SelectItem key={s} value={s} className="text-foreground font-['Plus_Jakarta_Sans']">{s}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">Location</Label>
+        <input data-testid="form-location" value={form.location} onChange={e=>setForm(f=>({...f,location:e.target.value}))} placeholder="Remote / NYC" className={inputCls} style={inputStyle} />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">Salary</Label>
+        <input data-testid="form-salary" value={form.salary_range} onChange={e=>setForm(f=>({...f,salary_range:e.target.value}))} placeholder="$80k–$120k" className={inputCls} style={inputStyle} />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">Applied Date</Label>
+        <input data-testid="form-date" type="date" value={form.applied_date} onChange={e=>setForm(f=>({...f,applied_date:e.target.value}))} className={inputCls} style={inputStyle} />
+      </div>
+      <div className="col-span-2 space-y-1.5">
+        <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">Job URL</Label>
+        <input data-testid="form-url" value={form.url} onChange={e=>setForm(f=>({...f,url:e.target.value}))} placeholder="https://..." className={inputCls} style={inputStyle} />
+      </div>
+      {form.tech_stack?.length>0 && (
+        <div className="col-span-2 space-y-1.5">
+          <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">Tech Stack</Label>
+          <div className="flex flex-wrap gap-1.5">
+            {form.tech_stack.map((t,i)=>(
+              <span key={i} className="text-xs px-2.5 py-1 rounded-full font-['Plus_Jakarta_Sans'] font-medium" style={{ background: "#EFF4FB", color: "#0071E3" }}>{t}</span>
+            ))}
+          </div>
+        </div>
+      )}
+      <div className="col-span-2 space-y-1.5">
+        <Label className="text-sm font-['Plus_Jakarta_Sans'] font-semibold text-foreground">Notes</Label>
+        <textarea data-testid="form-notes" value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} placeholder="Additional notes..." rows={3}
+          className="apple-input w-full px-3 py-2 text-sm resize-none" style={inputStyle} />
+      </div>
+    </div>
+
+    {/* Footer - Sticky */}
+    <DialogFooter className="gap-2 sticky bottom-0 bg-[rgb(var(--card))] z-10 pt-3 border-t border-border">
+      <button onClick={()=>setModalOpen(false)} className="apple-btn-secondary px-4 py-2 text-sm" style={{ color: "rgb(var(--muted-foreground))", borderColor: "rgb(var(--border))" }}>Cancel</button>
+      <button onClick={handleSave} disabled={saving||parsing} data-testid="save-application-btn"
+        className="apple-btn-primary px-4 py-2 text-sm disabled:opacity-50">
+        {saving ? "Saving..." : editApp ? "Update" : "Add Application"}
+      </button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
       {/* Delete Confirm */}
       <Dialog open={!!deleteId} onOpenChange={()=>setDeleteId(null)}>
         <DialogContent className="max-w-sm" style={{ background: "rgb(var(--card))", border: "1px solid rgb(var(--border))" }} data-testid="delete-modal">
