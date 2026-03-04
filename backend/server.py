@@ -11,7 +11,7 @@ from typing import List, Optional, Dict
 from urllib.parse import urlencode
 import uuid
 from datetime import datetime, timezone, timedelta
-from passlib.context import CryptContext
+import bcrypt
 from jose import JWTError, jwt
 import pdfplumber
 from bs4 import BeautifulSoup
@@ -29,7 +29,6 @@ JWT_SECRET = os.environ['JWT_SECRET']
 JWT_ALGORITHM = "HS256"
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
 app = FastAPI(title="MyJob CareerCopilot API")
@@ -140,11 +139,11 @@ class ConsentUpdate(BaseModel):
 # AUTH HELPERS
 # =====================================================================
 def hash_password(p):
-    return pwd_context.hash(p)
+    return bcrypt.hashpw(p.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 def verify_password(plain, hashed):
-    return pwd_context.verify(plain, hashed)
-
+    return bcrypt.checkpw(plain.encode('utf-8'), hashed.encode('utf-8'))
+    
 def create_access_token(uid):
     return jwt.encode({"sub": uid, "exp": datetime.now(timezone.utc) + timedelta(days=7), "type": "access"}, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
