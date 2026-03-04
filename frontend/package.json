@@ -51,6 +51,7 @@
     "ajv": "8.18.0",
     "ajv-formats": "3.0.1",
     "recharts": "^3.6.0",
+    "react-is": "19.2.4",
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.5.0",
     "tailwindcss-animate": "^1.0.7",
